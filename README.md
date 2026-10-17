@@ -236,8 +236,12 @@ Production database credentials and secret keys are configured using Render envi
 
 The API is deployed on Render.
 
-- **Service URL:** https://vehicle-inventory-booking-api-jy1v.onrender.com
-- **API Documentation:** https://vehicle-inventory-booking-api-jy1v.onrender.com/api/docs/
+- **Live API Base URL:** https://vehicle-inventory-booking-api-jy1v.onrender.com
+- **Swagger API Documentation:** https://vehicle-inventory-booking-api-jy1v.onrender.com/api/docs/
+- **Vehicles Endpoint:** https://vehicle-inventory-booking-api-jy1v.onrender.com/api/vehicles/
+- **Bookings Endpoint:** https://vehicle-inventory-booking-api-jy1v.onrender.com/api/bookings/
+
+Use the Swagger documentation to test the API endpoints,create bookings, and verify validation rules.
 
 The deployed service uses Gunicorn to run Django and applies database migrations during the build process.
 
