@@ -1,41 +1,76 @@
 
 # Vehicle Inventory & Booking API
 
-A REST API built using Django and Django REST Framework to manage vehicle inventory and vehicle bookings.
+A REST API built using Django REST Framework to manage vehicle inventory and customer bookings. The API supports vehicle CRUD operations, booking management, input validation, pricing calculations, vehicle filtering, and interactive API documentation.
+
+## Live Demo
+
+- **Live API:** https://vehicle-inventory-booking-api-jy1v.onrender.com
+- **Swagger Documentation:** https://vehicle-inventory-booking-api-jy1v.onrender.com/api/docs/
+- **GitHub Repository:** https://github.com/Arjunr2130/vehicle-inventory-booking-api
 
 ## Features
 
-- Create, view, update, and delete vehicles.
-- List and create vehicle bookings.
-- Retrieve individual booking details.
+- Create, retrieve, update, and delete vehicles.
+- List and retrieve individual bookings.
 - Filter vehicles by brand, fuel type, and availability.
-- Validate customer phone numbers and booking dates.
+- Validate vehicle details, customer phone numbers, and booking dates.
 - Prevent overlapping bookings for the same vehicle.
-- Automatically calculate the total booking amount based on the number of days and the vehicle's daily price.
+- Automatically calculate booking amounts using the daily rental price and booking duration.
 - Update vehicle availability after a successful booking.
 - Interactive API documentation using Swagger UI.
+- Automated tests for API functionality and validation.
 
 ## Technologies Used
 
 - Python
 - Django
 - Django REST Framework
-- Django Filter
+- django-filter
 - drf-spectacular
-- SQLite
+- SQLite for local development
+- PostgreSQL for production deployment
+- Gunicorn
+- Render
+
+## Project Structure
+
+```text
+vehicle_system/
+├── inventory/
+│   ├── migrations/
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py
+│   ├── serializers.py
+│   ├── tests.py
+│   └── views.py
+├── vehicle_system/
+│   ├── settings.py
+│   ├── urls.py
+│   ├── asgi.py
+│   └── wsgi.py
+├── .env.example
+├── .gitignore
+├── manage.py
+├── requirements.txt
+└── README.md
+```
 
 ## Project Setup
 
 ### 1. Clone the Repository
 
-Replace the URL below with your GitHub repository URL.
-
 ```bash
-git clone YOUR_GITHUB_REPOSITORY_URL
-cd vehicle_booking_project
+git clone https://github.com/Arjunr2130/vehicle-inventory-booking-api.git
+cd vehicle-inventory-booking-api
 ```
 
-### 2. Create and Activate the Virtual Environment
+Navigate into the directory containing `manage.py` if your repository has an additional nested project folder.
+
+### 2. Create and Activate a Virtual Environment
+
+On Windows PowerShell:
 
 ```powershell
 python -m venv myvenv
@@ -45,18 +80,24 @@ python -m venv myvenv
 ### 3. Install Dependencies
 
 ```bash
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
 ### 4. Configure Environment Variables
 
-Create a `.env` file in the project root directory using `.env.example` as a reference.
+Create a `.env` file in the project root, using `.env.example` as a reference.
 
-Add your own development secret key and environment settings to `.env`.
+Configure your local development settings, including a Django secret key and debug mode.
 
-Do not upload your actual `.env` file or secret key to GitHub.
+Do not commit your actual `.env` file or production credentials to GitHub.
 
 ### 5. Apply Database Migrations
+
+```bash
+python manage.py migrate
+```
+
+If you have changed your models and created new model fields, generate migrations first:
 
 ```bash
 python manage.py makemigrations
@@ -69,7 +110,7 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-The API will be available at:
+The local API will be available at:
 
 http://127.0.0.1:8000/
 
@@ -81,9 +122,8 @@ http://127.0.0.1:8000/
 |---|---|---|
 | GET | `/api/vehicles/` | List all vehicles |
 | POST | `/api/vehicles/` | Create a vehicle |
-| GET | `/api/vehicles/<id>/` | Retrieve a vehicle |
+| GET | `/api/vehicles/<id>/` | Retrieve vehicle details |
 | PUT | `/api/vehicles/<id>/` | Update a vehicle |
-| PATCH | `/api/vehicles/<id>/` | Partially update a vehicle |
 | DELETE | `/api/vehicles/<id>/` | Delete a vehicle |
 
 ### Booking Endpoints
@@ -92,9 +132,9 @@ http://127.0.0.1:8000/
 |---|---|---|
 | GET | `/api/bookings/` | List all bookings |
 | POST | `/api/bookings/` | Create a booking |
-| GET | `/api/bookings/<id>/` | Retrieve a booking |
+| GET | `/api/bookings/<id>/` | Retrieve booking details |
 
-## Vehicle Filters
+## Vehicle Filtering
 
 Vehicles can be filtered using query parameters.
 
@@ -102,13 +142,13 @@ Examples:
 
 ```text
 /api/vehicles/?brand=Toyota
-/api/vehicles/?fuel_type=Petrol
-/api/vehicles/?is_available=True
+/api/vehicles/?fuel_type=Electric
+/api/vehicles/?is_available=true
 ```
 
 ## Sample Vehicle Request
 
-Use the following JSON when creating a vehicle:
+Send a POST request to `/api/vehicles/`:
 
 ```json
 {
@@ -121,48 +161,95 @@ Use the following JSON when creating a vehicle:
 }
 ```
 
+Use a supported fuel type: `Petrol`, `Diesel`, `Electric`, or `Hybrid`.
+
 ## Sample Booking Request
 
-Use valid future dates when creating a booking.
+Send a POST request to `/api/bookings/`:
 
 ```json
 {
   "vehicle": 1,
   "customer_name": "Arun Kumar",
   "customer_phone": "9876543210",
-  "start_date": "YYYY-MM-DD",
-  "end_date": "YYYY-MM-DD"
+  "start_date": "2026-10-20",
+  "end_date": "2026-10-22"
 }
 ```
 
-Replace `YYYY-MM-DD` with actual dates. The end date must be later than the start date, and the start date cannot be in the past.
+Replace the vehicle ID with an existing vehicle ID and use valid future dates.
 
-The total amount is calculated automatically by the API.
+The API calculates `total_amount` automatically. The supplied dates are examples; use dates that are valid when you test the API.
+
+## Booking Validation Rules
+
+- Booking start date cannot be in the past.
+- Booking end date must be after the start date.
+- Customer phone number must contain exactly 10 digits.
+- The same vehicle cannot have overlapping bookings.
+- Booking amount is calculated automatically using the daily rental price and booking duration.
+- Vehicle availability is updated after a successful booking.
+
+Invalid requests should return appropriate validation errors.
 
 ## API Documentation
 
-Swagger UI:
+### Swagger UI
+
+Local:
 
 http://127.0.0.1:8000/api/docs/
 
-Use Swagger UI to explore and test the available endpoints.
+Production:
+
+https://vehicle-inventory-booking-api-jy1v.onrender.com/api/docs/
+
+Use Swagger UI to explore endpoints, submit requests, inspect responses, and test validation rules.
 
 ## Running Tests
 
-Run the automated tests using:
+Run the automated tests from the directory containing `manage.py`:
 
 ```bash
 python manage.py test inventory
 ```
 
-## Database
+Run Django's system checks:
 
-The project uses SQLite for local development.
+```bash
+python manage.py check
+```
+
+## Database Configuration
+
+- **Local development:** SQLite
+- **Production deployment:** PostgreSQL on Render
+
+Production database credentials and secret keys are configured using Render environment variables. Do not publish real credentials in this repository.
 
 ## Deployment
 
-**Hosted API URL:** Add your deployed API URL here after deployment.
+The API is deployed on Render.
+
+- **Service URL:** https://vehicle-inventory-booking-api-jy1v.onrender.com
+- **API Documentation:** https://vehicle-inventory-booking-api-jy1v.onrender.com/api/docs/
+
+The deployed service uses Gunicorn to run Django and applies database migrations during the build process.
+
+Note: Render free services may take some time to respond after periods of inactivity.
 
 ## Demo Video
 
-**Demo Video Link:** Add your shareable screen-recording link here after recording the project demonstration.
+**Demo Video Link:** Add your shareable Google Drive or YouTube recording link here.
+
+The 2–5 minute demonstration should show:
+
+1. Running or accessing the application.
+2. Testing vehicle endpoints in Swagger UI.
+3. Creating a booking and verifying the calculated amount.
+4. Testing booking validations, including invalid dates and overlapping bookings.
+5. Demonstrating vehicle filtering.
+
+## Author
+
+**Arjun R.**
