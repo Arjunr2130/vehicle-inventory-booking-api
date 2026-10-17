@@ -5,9 +5,14 @@ A REST API built using Django REST Framework to manage vehicle inventory and cus
 
 ## Live Demo
 
-- **Live API:** https://vehicle-inventory-booking-api-jy1v.onrender.com
-- **Swagger Documentation:** https://vehicle-inventory-booking-api-jy1v.onrender.com/api/docs/
-- **GitHub Repository:** https://github.com/Arjunr2130/vehicle-inventory-booking-api
+- **Live API Documentation (Swagger):**
+  https://vehicle-inventory-booking-api-jy1v.onrender.com/api/docs/
+
+- **Vehicles API:**
+  https://vehicle-inventory-booking-api-jy1v.onrender.com/api/vehicles/
+
+- **Bookings API:**
+  https://vehicle-inventory-booking-api-jy1v.onrender.com/api/bookings/
 
 ## Features
 
